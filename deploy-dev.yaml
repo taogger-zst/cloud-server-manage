@@ -1,0 +1,88 @@
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  labels:
+#    app: gateway-server
+#    version: v1
+#    app.kubernetes.io/version: v1
+#    app.kubernetes.io/name: app-server
+#  name: gateway-server
+#  namespace: yxd-app-dev   #一定要写名称空间
+#spec:
+#  progressDeadlineSeconds: 600     # 定义 deploy 升级的最大时间
+#  replicas: 1 #副本数
+#  selector:
+#    matchLabels:
+#      app: gateway-server
+#      app.kubernetes.io/version: v1
+#      app.kubernetes.io/name: app-server
+#      version: v1
+#  strategy:
+#    rollingUpdate: #滚动更新
+#      maxSurge: 50%
+#      maxUnavailable: 50%
+#    type: RollingUpdate
+#  template:
+#    metadata:
+#      labels:
+#        app: gateway-server
+#        version: v1
+#        app.kubernetes.io/version: v1
+#        app.kubernetes.io/name: app-server
+#    spec:
+#      volumes:
+#        - name: host-time
+#          hostPath:
+#            path: /etc/localtime
+#            type: ''
+#      imagePullSecrets:   ##镜像拉取凭证-需在保密字典配置
+#        #- name: docker-hub
+#        - name: aliyun-hub
+#      containers:
+#        - name: gateway-server
+#          image: $REGISTRY/$DOCKERHUB_NAMESPACE/$APP_NAME:dev
+#          imagePullPolicy: Always
+#          ports:
+#            - name: tcp-9999
+#              containerPort: 9999
+#              protocol: TCP
+#          env:
+#            - name: IP
+#              value: nacos-0.nacos-headless.yxd-app-dev.svc.cluster.local:8848,nacos-1.nacos-headless.yxd-app-dev.svc.cluster.local:8848,nacos-2.nacos-headless.yxd-app-dev.svc.cluster.local:8848
+#            - name: NAMESPACE
+#              value: dev-88888888
+#          resources:
+#            limits:
+#              cpu: '1'
+#              memory: '2Gi'
+#          volumeMounts:
+#            - name: host-time
+#              readOnly: true
+#              mountPath: /etc/localtime
+#          terminationMessagePath: /dev/termination-log   #容器异常终止配置
+#          terminationMessagePolicy: File
+#      dnsPolicy: ClusterFirst
+#      restartPolicy: Always
+#      terminationGracePeriodSeconds: 30
+#---
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  labels:
+#    version: v1
+#    app: gateway-server
+#    app.kubernetes.io/version: v1
+#    app.kubernetes.io/name: app-server
+#  name: gateway-server
+#  namespace: yxd-app-dev
+#spec:
+#  ports:
+#    - name: http
+#      port: 9999
+#      protocol: TCP
+#      targetPort: 9999
+#  selector:
+#    app: gateway-server
+#    app.kubernetes.io/version: v1
+#    app.kubernetes.io/name: app-server
+#    version: v1
