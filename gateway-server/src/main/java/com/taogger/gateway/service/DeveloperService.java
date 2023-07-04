@@ -6,6 +6,13 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.PropertyKeyConst;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.config.nacos.KJNcConfigManager;
+import com.taogger.gateway.mapper.ConfigInfoMapper;
+import com.taogger.gateway.model.ConfigInfo;
+import com.taogger.gateway.model.DeveloperEntity;
+import com.taogger.gateway.model.TenantInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -13,15 +20,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.config.nacos.KJNcConfigManager;
-import yxd.kj.app.server.gateway.mapper.ConfigInfoMapper;
-import yxd.kj.app.server.gateway.model.ConfigInfo;
-import yxd.kj.app.server.gateway.model.DeveloperEntity;
-import yxd.kj.app.server.gateway.model.TenantInfo;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -47,18 +49,18 @@ public class DeveloperService {
      * @author taogger
      * @date 2022/8/11 15:42
      * @param developerEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @SneakyThrows
-    public YXDJSONResult add(DeveloperEntity developerEntity) {
-        var now = LocalDateTime.now();
+    public ServerJSONResult add(DeveloperEntity developerEntity) {
+        LocalDateTime now = LocalDateTime.now();
         String id = developerEntity.getNamespace() + RandomUtil.randomString(6);
         developerEntity.setId(id);
         developerEntity.setCreateTime(now);
         developerEntity.setUpdateTime(now);
         KJNcConfigManager.saveDevelopers(developerEntity);
         long count = tenantInfoService.count();
-        var tenantInfo = new TenantInfo();
+        TenantInfo tenantInfo = new TenantInfo();
         tenantInfo.setTenantDesc(developerEntity.getName());
         tenantInfo.setTenantId(id);
         tenantInfo.setCreateSource("nacos");
@@ -69,20 +71,20 @@ public class DeveloperService {
         tenantInfo.setKp("1");
         tenantInfoService.save(tenantInfo);
         //新加配置信息
-        var queryWrapper = new LambdaQueryWrapper<ConfigInfo>();
+        LambdaQueryWrapper<ConfigInfo> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(ConfigInfo::getTenantId,namespace);
         //创建configService
         Properties properties = nacosConfigManager.getNacosConfigProperties().assembleConfigServiceProperties();
         properties.put(PropertyKeyConst.NAMESPACE, id);
         ConfigService configService = NacosFactory.createConfigService(properties);
-        var configInfos = configInfoMapper.selectList(queryWrapper);
+        List<ConfigInfo> configInfos = configInfoMapper.selectList(queryWrapper);
         if (!configInfos.isEmpty()) {
             for (ConfigInfo c : configInfos) {
                 configService.publishConfig(c.getDataId(), c.getGroupId(), c.getContent());
             }
         }
         configService.shutDown();
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
     /**
@@ -90,19 +92,19 @@ public class DeveloperService {
      * @author taogger
      * @date 2022/8/12 11:21
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @SneakyThrows
-    public YXDJSONResult del(String id) {
+    public ServerJSONResult del(String id) {
         KJNcConfigManager.delDeveloper(id);
-        var queryWrapper = new LambdaQueryWrapper<TenantInfo>();
+        LambdaQueryWrapper<TenantInfo> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(TenantInfo::getTenantId,id);
         tenantInfoService.remove(queryWrapper);
 
-        var configQueryWrapper = new LambdaQueryWrapper<ConfigInfo>();
+        LambdaQueryWrapper<ConfigInfo> configQueryWrapper = Wrappers.lambdaQuery();
         configQueryWrapper.eq(ConfigInfo::getTenantId,id);
         configInfoMapper.delete(configQueryWrapper);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
     /**
@@ -111,15 +113,15 @@ public class DeveloperService {
      * @date 2022/8/12 11:29
      * @param page
      * @param limit
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
-    public YXDJSONResult list(int page, int limit) {
-        var pageable = PageRequest.of(page - 1, limit);
+    public ServerJSONResult list(int page, int limit) {
+        PageRequest pageable = PageRequest.of(page - 1, limit);
         //分页
-        var entities = KJNcConfigManager.getDeveloperEntities().stream()
+        List<DeveloperEntity> entities = KJNcConfigManager.getDeveloperEntities().stream()
                 .skip((page - 1) * limit)
                 .limit(limit).collect(Collectors.toList());
-        var developerEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getDeveloperEntities().size());
-        return YXDJSONResult.ok(developerEntities);
+        PageImpl developerEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getDeveloperEntities().size());
+        return ServerJSONResult.ok(developerEntities);
     }
 }

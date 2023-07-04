@@ -1,7 +1,9 @@
 package com.taogger.gateway.filter;
 
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
+import com.taogger.gateway.loadbalancer.DeveloperLoadbalancer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.loadbalancer.*;
 import org.springframework.cloud.gateway.config.GatewayLoadBalancerProperties;
@@ -14,9 +16,9 @@ import org.springframework.cloud.loadbalancer.support.LoadBalancerClientFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import yxd.kj.app.server.gateway.loadbalancer.DeveloperLoadbalancer;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.Set;
 
 import static org.springframework.cloud.gateway.support.ServerWebExchangeUtils.*;
@@ -60,8 +62,8 @@ public class DeveloperLoadbalancerFilter extends ReactiveLoadBalancerClientFilte
         }
 
         URI requestUri = exchange.getAttribute(GATEWAY_REQUEST_URL_ATTR);
-        var serviceId = requestUri.getHost();
-        var supportedLifecycleProcessors = LoadBalancerLifecycleValidator
+        String serviceId = requestUri.getHost();
+        Set<LoadBalancerLifecycle> supportedLifecycleProcessors = LoadBalancerLifecycleValidator
                 .getSupportedLifecycleProcessors(clientFactory.getInstances(serviceId, LoadBalancerLifecycle.class),
                         RequestDataContext.class, ResponseData.class, ServiceInstance.class);
         DefaultRequest<RequestDataContext> lbRequest = new DefaultRequest<>(
@@ -74,13 +76,13 @@ public class DeveloperLoadbalancerFilter extends ReactiveLoadBalancerClientFilte
                 throw NotFoundException.create(properties.isUse404(), "Unable to find instance for " + url.getHost());
             }
 
-            var retrievedInstance = response.getServer();
+            ServiceInstance retrievedInstance = response.getServer();
 
             URI uri = exchange.getRequest().getURI();
 
             // if the `lb:<scheme>` mechanism was used, use `<scheme>` as the default,
             // if the loadbalancer doesn't provide one.
-            var overrideScheme = retrievedInstance.isSecure() ? "https" : "http";
+            String overrideScheme = retrievedInstance.isSecure() ? "https" : "http";
             if (schemePrefix != null) {
                 overrideScheme = url.getScheme();
             }
@@ -114,10 +116,10 @@ public class DeveloperLoadbalancerFilter extends ReactiveLoadBalancerClientFilte
 
     private Mono<Response<ServiceInstance>> choose(Request<RequestDataContext> lbRequest, String serviceId,
                                                    Set<LoadBalancerLifecycle> supportedLifecycleProcessors) {
-        var env = nacosDiscoveryProperties.getMetadata().get("env");
-        var namespace = lbRequest.getContext().getClientRequest().getHeaders().getFirst("NAMESPACE");
-        if (env.equals("dev") && namespace != null && !namespace.isBlank()) {
-            var developerLoadbalancer = new DeveloperLoadbalancer(serviceId,
+        String env = nacosDiscoveryProperties.getMetadata().get("env");
+        String namespace = lbRequest.getContext().getClientRequest().getHeaders().getFirst("NAMESPACE");
+        if (env.equals("dev") && StringUtils.isNotBlank(namespace)) {
+            DeveloperLoadbalancer developerLoadbalancer = new DeveloperLoadbalancer(serviceId,
                     namespace,nacosDiscoveryProperties);
             return developerLoadbalancer.choose(lbRequest);
         }
@@ -126,7 +128,7 @@ public class DeveloperLoadbalancerFilter extends ReactiveLoadBalancerClientFilte
 
     private Mono<Response<ServiceInstance>> result(Request<RequestDataContext> lbRequest,String serviceId,
                                                    Set<LoadBalancerLifecycle> supportedLifecycleProcessors) {
-        var loadBalancer = this.clientFactory.getInstance(serviceId,
+        ReactorServiceInstanceLoadBalancer loadBalancer = this.clientFactory.getInstance(serviceId,
                 ReactorServiceInstanceLoadBalancer.class);
         if (loadBalancer == null) {
             throw new NotFoundException("No loadbalancer available for " + serviceId);
@@ -136,10 +138,10 @@ public class DeveloperLoadbalancerFilter extends ReactiveLoadBalancerClientFilte
     }
 
     private String getHint(String serviceId) {
-        var loadBalancerProperties = clientFactory.getProperties(serviceId);
-        var hints = loadBalancerProperties.getHint();
-        var defaultHint = hints.getOrDefault("default", "default");
-        var hintPropertyValue = hints.get(serviceId);
+        LoadBalancerProperties loadBalancerProperties = clientFactory.getProperties(serviceId);
+        Map<String, String> hints = loadBalancerProperties.getHint();
+        String defaultHint = hints.getOrDefault("default", "default");
+        String hintPropertyValue = hints.get(serviceId);
         return hintPropertyValue != null ? hintPropertyValue : defaultHint;
     }
 

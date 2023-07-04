@@ -2,13 +2,13 @@ package com.taogger.gateway.config;
 
 import com.alibaba.csp.sentinel.adapter.gateway.sc.SentinelGatewayFilter;
 import com.alibaba.csp.sentinel.adapter.gateway.sc.exception.SentinelGatewayBlockExceptionHandler;
+import com.taogger.gateway.filter.KJSentinelGatewayFilter;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.cloud.commons.util.InetUtils;
 import org.springframework.cloud.commons.util.InetUtilsProperties;
-import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -16,8 +16,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.web.reactive.result.view.ViewResolver;
-import yxd.kj.app.api.model.HostInfo;
-import yxd.kj.app.server.gateway.filter.KJSentinelGatewayFilter;
 
 import java.util.Collections;
 import java.util.List;
@@ -57,16 +55,16 @@ public class SentinelConfiguration {
      * @author taogger
      * @date 2022/8/17 16:19
      * @param environment
-     * @return {@link HostInfo}
+     * @return {@link InetUtils.HostInfo}
     **/
     @Bean
-    public HostInfo hostInfo(ConfigurableEnvironment environment) {
-        var target = new InetUtilsProperties();
+    public InetUtils.HostInfo hostInfo(ConfigurableEnvironment environment) {
+        InetUtilsProperties target = new InetUtilsProperties();
         ConfigurationPropertySources.attach(environment);
         Binder.get(environment).bind(InetUtilsProperties.PREFIX, Bindable.ofInstance(target));
         try (InetUtils utils = new InetUtils(target)) {
             InetUtils.HostInfo firstNonLoopbackHostInfo = utils.findFirstNonLoopbackHostInfo();
-            HostInfo hostInfo = new HostInfo();
+            InetUtils.HostInfo hostInfo = new InetUtils.HostInfo();
             hostInfo.setHostname(firstNonLoopbackHostInfo.getHostname());
             hostInfo.setIpAddress(firstNonLoopbackHostInfo.getIpAddress());
             return hostInfo;

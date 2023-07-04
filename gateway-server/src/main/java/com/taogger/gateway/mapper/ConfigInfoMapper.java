@@ -1,7 +1,7 @@
 package com.taogger.gateway.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import yxd.kj.app.server.gateway.model.ConfigInfo;
+import com.taogger.gateway.model.ConfigInfo;
 
 /**
  * 配置信息

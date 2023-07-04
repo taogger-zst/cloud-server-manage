@@ -1,5 +1,6 @@
 package com.taogger.gateway.config;
 
+import com.taogger.gateway.constant.SysConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
@@ -8,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import yxd.kj.app.server.gateway.constant.SysConstant;
 
 /**
  * @author taogger

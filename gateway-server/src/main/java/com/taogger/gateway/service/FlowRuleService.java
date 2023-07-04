@@ -1,15 +1,15 @@
 package com.taogger.gateway.service;
 
 import cn.hutool.core.lang.Snowflake;
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.config.nacos.KJNcConfigManager;
+import com.taogger.gateway.model.FlowRuleEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.config.nacos.KJNcConfigManager;
-import yxd.kj.app.server.gateway.model.FlowRuleEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,13 +31,13 @@ public class FlowRuleService {
      * @date 2022/8/17 15:25
      * @param page
      * @param limit
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
-    public YXDJSONResult list(int page, int limit) {
-        var pageable = PageRequest.of(page - 1, limit);
-        var entities = KJNcConfigManager.getFlows().stream().skip((page - 1) * limit).limit(limit).collect(Collectors.toList());
-        var rulePage = new PageImpl<>(entities, pageable, KJNcConfigManager.getFlows().size());
-        return YXDJSONResult.ok(rulePage);
+    public ServerJSONResult list(int page, int limit) {
+        PageRequest pageable = PageRequest.of(page - 1, limit);
+        List<FlowRuleEntity> entities = KJNcConfigManager.getFlows().stream().skip((page - 1) * limit).limit(limit).collect(Collectors.toList());
+        PageImpl rulePage = new PageImpl<>(entities, pageable, KJNcConfigManager.getFlows().size());
+        return ServerJSONResult.ok(rulePage);
     }
 
     /**
@@ -45,14 +45,14 @@ public class FlowRuleService {
      * @author taogger
      * @date 2022/8/17 15:30
      * @param flowRuleEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @SneakyThrows
-    public YXDJSONResult add(FlowRuleEntity flowRuleEntity) {
+    public ServerJSONResult add(FlowRuleEntity flowRuleEntity) {
         Long id = new Snowflake().nextId();
         flowRuleEntity.setId(id.toString());
         KJNcConfigManager.saveFlow(flowRuleEntity);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
     /** 
@@ -60,21 +60,21 @@ public class FlowRuleService {
      * @author taogger 
      * @date 2022/8/17 16:39
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @SneakyThrows
-    public YXDJSONResult del(String id) {
+    public ServerJSONResult del(String id) {
         KJNcConfigManager.delFlow(id);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
-    public YXDJSONResult detail(String id) {
+    public ServerJSONResult detail(String id) {
         List<FlowRuleEntity> flows = KJNcConfigManager.getFlows();
         for (FlowRuleEntity flowRuleEntity : flows) {
             if (flowRuleEntity.getId().equals(id)) {
-                return YXDJSONResult.ok(flowRuleEntity);
+                return ServerJSONResult.ok(flowRuleEntity);
             }
         }
-        return YXDJSONResult.errorMsg("数据不存在");
+        return ServerJSONResult.errorMsg("数据不存在");
     }
 }

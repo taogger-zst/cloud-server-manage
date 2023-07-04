@@ -113,12 +113,12 @@ public class DynamicRouteDefinitionRepository implements RouteDefinitionReposito
     @PostConstruct
     public void init() {
         //初始化获取配置、开启监听
-        var config = configService.getConfig(dataId, group, 3000);
+        String config = configService.getConfig(dataId, group, 3000);
         routeDefinitions = JSONUtil.toList(config, RouteDefinition.class);
         configService.addListener(dataId, group, new AbstractSharedListener() {
             @Override
             public void innerReceive(String dataId, String group, String configInfo) {
-                var routeDs = JSONUtil.toList(configInfo, RouteDefinition.class);
+                List<RouteDefinition> routeDs = JSONUtil.toList(configInfo, RouteDefinition.class);
                 routeDefinitions.clear();
                 routeDefinitions.addAll(routeDs);
                 applicationEventPublisher.publishEvent(this);

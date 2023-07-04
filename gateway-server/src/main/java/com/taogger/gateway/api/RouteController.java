@@ -1,13 +1,13 @@
 package com.taogger.gateway.api;
 
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.model.FilterRouteEntity;
+import com.taogger.gateway.service.DynamicRouteService;
+import com.taogger.gateway.service.FilterRouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.route.RouteDefinition;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.model.FilterRouteEntity;
-import yxd.kj.app.server.gateway.service.DynamicRouteService;
-import yxd.kj.app.server.gateway.service.FilterRouteService;
 
 /**
  * 动态路由Api
@@ -29,7 +29,7 @@ public class RouteController {
      * @return {@link Flux<RouteDefinition>}
     **/
     @GetMapping("/dynamic/list")
-    public YXDJSONResult dynamicList(int pageNum, int pageSize) {
+    public ServerJSONResult dynamicList(int pageNum, int pageSize) {
         return dynamicRouteService.routes(pageNum, pageSize);
     }
 
@@ -38,10 +38,10 @@ public class RouteController {
      * @author taogger
      * @date 2022/8/11 9:24
      * @param routeDefinition
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @PostMapping("/dynamic/add")
-    public YXDJSONResult dynamicAdd(@RequestBody RouteDefinition routeDefinition) {
+    public ServerJSONResult dynamicAdd(@RequestBody RouteDefinition routeDefinition) {
         return dynamicRouteService.add(routeDefinition);
     }
 
@@ -50,10 +50,10 @@ public class RouteController {
      * @author taogger
      * @date 2022/8/11 9:25
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @DeleteMapping("/dynamic/del/{id}")
-    public YXDJSONResult dynamicUpd(@PathVariable("id") String id) {
+    public ServerJSONResult dynamicUpd(@PathVariable("id") String id) {
         return dynamicRouteService.delete(id);
     }
 
@@ -64,10 +64,10 @@ public class RouteController {
      * @date 2022/8/15 14:13
      * @param pageNum
      * @param pageSize
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @GetMapping("/filter/list")
-    public YXDJSONResult filterList(int pageNum, int pageSize) {
+    public ServerJSONResult filterList(int pageNum, int pageSize) {
         return filterRouteService.list(pageNum, pageSize);
     }
 
@@ -76,10 +76,10 @@ public class RouteController {
      * @author taogger 
      * @date 2022/8/15 14:15
      * @param filterRouteEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @PostMapping("/filter/add")
-    public YXDJSONResult filterAdd(@RequestBody FilterRouteEntity filterRouteEntity) {
+    public ServerJSONResult filterAdd(@RequestBody FilterRouteEntity filterRouteEntity) {
         return filterRouteService.add(filterRouteEntity);
     }
 
@@ -88,10 +88,10 @@ public class RouteController {
      * @author taogger
      * @date 2022/8/15 14:16
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @DeleteMapping("/filter/del/{id}")
-    public YXDJSONResult filterDel(@PathVariable("id") String id) {
+    public ServerJSONResult filterDel(@PathVariable("id") String id) {
         return filterRouteService.del(id);
     }
 }

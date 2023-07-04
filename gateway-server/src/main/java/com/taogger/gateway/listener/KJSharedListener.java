@@ -2,9 +2,9 @@ package com.taogger.gateway.listener;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.AbstractSharedListener;
+import com.taogger.gateway.config.nacos.*;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import yxd.kj.app.server.gateway.config.nacos.*;
 
 import java.util.ArrayList;
 import java.util.List;

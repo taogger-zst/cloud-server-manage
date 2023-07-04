@@ -1,7 +1,7 @@
 package com.taogger.gateway.config.nacos;
 
 import cn.hutool.json.JSONUtil;
-import yxd.kj.app.server.gateway.model.ResubmitEntity;
+import com.taogger.gateway.model.ResubmitEntity;
 
 import java.util.List;
 

@@ -1,15 +1,16 @@
 package com.taogger.gateway.utils;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSONObject;
+import com.taogger.common.constants.TokenConstant;
+import com.taogger.gateway.constant.FilterConstant;
+import com.taogger.gateway.model.ContentCheckEntity;
+import com.taogger.gateway.model.ResubmitEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.server.ServerWebExchange;
-import yxd.kj.app.api.constants.TokenConstant;
-import yxd.kj.app.server.gateway.constant.FilterConstant;
-import yxd.kj.app.server.gateway.model.ContentCheckEntity;
-import yxd.kj.app.server.gateway.model.ResubmitEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,33 +32,33 @@ public class FilterUtils {
      **/
     public static String getResubmitParamsValue(ServerHttpRequest request, ServerWebExchange exchange
             , ResubmitEntity resubmit) {
-        var redisParams = new LinkedHashMap<String,Object>();
-        var name = resubmit.getParams();
+        LinkedHashMap<String,Object> redisParams = new LinkedHashMap();
+        String name = resubmit.getParams();
         String[] split = name.split(",");
         if (split[0].equals(TokenConstant.USER_ID)) {
             //如果有userId,但是没有token解析中的userId数据，则重复提交判断失效
             String userId = getUserId(exchange);
-            if (userId == null || userId.isBlank()) {
+            if (StringUtils.isBlank(userId)) {
                 return null;
             } else {
                 redisParams.put(split[0],userId);
             }
         }
-        for (var i = 0; i < split.length; i++) {
+        for (int i = 0; i < split.length; i++) {
             if (split[i].equals(TokenConstant.USER_ID)) {
                 continue;
             }
             if (request.getMethod() == HttpMethod.GET
                     || request.getMethod() == HttpMethod.DELETE) {
-                var param = request.getQueryParams().getFirst(split[i]);
-                if (param == null || param.isBlank()) {
+                String param = request.getQueryParams().getFirst(split[i]);
+                if (StringUtils.isBlank(param)) {
                     return null;
                 }
                 redisParams.put(split[i], param);
             } else if (request.getMethod() == HttpMethod.POST
                     || request.getMethod() == HttpMethod.PUT) {
-                var param = getBody(exchange, name);
-                if (param == null || param.isBlank()) {
+                String param = getBody(exchange, name);
+                if (StringUtils.isBlank(param)) {
                     return null;
                 }
                 redisParams.put(split[i], param);
@@ -82,13 +83,13 @@ public class FilterUtils {
     **/
     public static Map<String,String> getContentCheckParamsValue(ServerHttpRequest request, ServerWebExchange exchange
             , ContentCheckEntity content) {
-        var name = content.getParams();
-        var type = content.getType();
+        String name = content.getParams();
+        String type = content.getType();
         String[] params = name.split(",");
         String[] paramsType = type.split(",");
-        var text = new ArrayList<String>();
-        var image = new ArrayList<String>();
-        for (var i = 0; i < params.length; i++) {
+        List<String> text = new ArrayList<>();
+        List<String> image = new ArrayList<String>();
+        for (int i = 0; i < params.length; i++) {
             String value = null;
             if (request.getMethod() == HttpMethod.GET
                     || request.getMethod() == HttpMethod.DELETE) {
@@ -107,7 +108,7 @@ public class FilterUtils {
                 }
             }
         }
-        var checkParams = new HashMap<String,String>();
+        Map<String,String> checkParams = new HashMap<>();
         if (!text.isEmpty()) {
             checkParams.put("text",text.stream().collect(Collectors.joining(",")));
         }
@@ -119,9 +120,9 @@ public class FilterUtils {
 
 
     public static String getBody(ServerWebExchange exchange,String name) {
-        var putBody = getBody(exchange);
-        if (putBody != null && !putBody.isBlank()) {
-            return JSONObject.parseObject(putBody).getString(name);
+        String putBody = getBody(exchange);
+        if (StringUtils.isNotBlank(putBody)) {
+            return new JSONObject(putBody).getStr(name);
         }
         return null;
     }
@@ -141,8 +142,8 @@ public class FilterUtils {
         String token = exchange.getRequest().getHeaders().getFirst(TokenConstant.TOKEN_NAME);
         if (token != null) {
             String json = Base64.decodeStr(token);
-            cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);
-            String userId=jsonObject.getStr(TokenConstant.USER_ID);
+            JSONObject jsonObject = JSONUtil.parseObj(json);
+            String userId = jsonObject.getStr(TokenConstant.USER_ID);
             return userId;
         }
         return null;

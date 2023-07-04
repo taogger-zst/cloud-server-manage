@@ -1,7 +1,7 @@
 package com.taogger.gateway.config.nacos;
 
 import cn.hutool.json.JSONUtil;
-import yxd.kj.app.server.gateway.model.BlackRouteEntity;
+import com.taogger.gateway.model.BlackRouteEntity;
 
 import java.util.List;
 

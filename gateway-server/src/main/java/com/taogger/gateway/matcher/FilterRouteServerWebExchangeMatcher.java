@@ -1,5 +1,7 @@
 package com.taogger.gateway.matcher;
 
+import com.taogger.gateway.config.nacos.KJNcConfigManager;
+import com.taogger.gateway.model.FilterRouteEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
@@ -8,8 +10,6 @@ import org.springframework.security.web.server.util.matcher.ServerWebExchangeMat
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import yxd.kj.app.server.gateway.config.nacos.KJNcConfigManager;
-import yxd.kj.app.server.gateway.model.FilterRouteEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +34,14 @@ public class FilterRouteServerWebExchangeMatcher implements ServerWebExchangeMat
     **/
     @Override
     public Mono<MatchResult> matches(ServerWebExchange exchange) {
-        var all = KJNcConfigManager.getFilterRoutes();
-        var uris = all.stream().map(FilterRouteEntity::getUri).collect(Collectors.toList());
-        var serverWebExchangeMatchers = getServerWebExchangeMatchers(uris);
+        List<FilterRouteEntity> all = KJNcConfigManager.getFilterRoutes();
+        List<String> uris = all.stream().map(FilterRouteEntity::getUri).collect(Collectors.toList());
+        List<ServerWebExchangeMatcher> serverWebExchangeMatchers = getServerWebExchangeMatchers(uris);
         return new OrServerWebExchangeMatcher(serverWebExchangeMatchers).matches(exchange);
     }
 
     private List<ServerWebExchangeMatcher> getServerWebExchangeMatchers(List<String> uris) {
-        var matchers = new ArrayList<ServerWebExchangeMatcher>(uris.size());
+        List<ServerWebExchangeMatcher> matchers = new ArrayList<>(uris.size());
         for (String uri : uris) {
             matchers.add(new PathPatternParserServerWebExchangeMatcher(uri, null));
         }

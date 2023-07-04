@@ -3,6 +3,7 @@ package com.taogger.gateway.loadbalancer;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.cloud.nacos.NacosDiscoveryProperties;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.alibaba.nacos.client.naming.NacosNamingService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.DefaultServiceInstance;
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 开发者Loadbalancer--只用于开发环境
- * 性能占用大,用于开发环境节省开发者资源
+ * 性能占用大,速度满,用于开发环境节省开发者资源
  * @author taogger
  * @date 2022/8/10 10:11
  */
@@ -59,15 +60,15 @@ public class DeveloperLoadbalancer implements ReactorServiceInstanceLoadBalancer
     // https://github.com/Netflix/ocelli/blob/master/ocelli-core/
     // src/main/java/netflix/ocelli/loadbalancer/RoundRobinLoadBalancer.java
     public Mono<Response<ServiceInstance>> choose(Request request) {
-        var requestDataContext = (RequestDataContext) request.getContext();
-        var properties = nacosDiscoveryProperties.getNacosProperties();
-        var copyProperties = new Properties();
+        RequestDataContext requestDataContext = (RequestDataContext) request.getContext();
+        Properties properties = nacosDiscoveryProperties.getNacosProperties();
+        Properties copyProperties = new Properties();
         copyProperties.putAll(properties);
         copyProperties.setProperty("namespace",namespace);
         try {
             namingService = new NacosNamingService(copyProperties);
-            var allInstances = namingService.getAllInstances(serviceId);
-            var builderServiceInstances = new ArrayList<ServiceInstance>();
+            List<Instance> allInstances = namingService.getAllInstances(serviceId);
+            List<ServiceInstance> builderServiceInstances = new ArrayList<ServiceInstance>();
             allInstances.forEach(i -> {
                 DefaultServiceInstance serviceInstance = new DefaultServiceInstance(i.getInstanceId(), i.getServiceName(),
                         i.getIp(), i.getPort(), Boolean.FALSE);
@@ -101,7 +102,7 @@ public class DeveloperLoadbalancer implements ReactorServiceInstanceLoadBalancer
         // TODO: enforce order?
         int pos = Math.abs(this.position.incrementAndGet());
 
-        var instance = instances.get(pos % instances.size());
+        ServiceInstance instance = instances.get(pos % instances.size());
 
         return new DefaultResponse(instance);
     }

@@ -1,5 +1,10 @@
 package com.taogger.gateway.filter;
 
+import com.taogger.common.constants.TokenConstant;
+import com.taogger.gateway.constant.FilterConstant;
+import com.taogger.gateway.service.DeviceService;
+import com.taogger.gateway.utils.Device;
+import com.taogger.gateway.utils.DevicePlatform;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -8,11 +13,6 @@ import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import yxd.kj.app.api.constants.TokenConstant;
-import yxd.kj.app.server.gateway.constant.FilterConstant;
-import yxd.kj.app.server.gateway.service.DeviceService;
-import yxd.kj.app.server.gateway.utils.Device;
-import yxd.kj.app.server.gateway.utils.DevicePlatform;
 
 /**
  * 设备过滤器,识别请求过滤的设备

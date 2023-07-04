@@ -1,6 +1,8 @@
 package com.taogger.gateway.exception;
 
 import com.alibaba.csp.sentinel.adapter.gateway.sc.callback.DefaultBlockRequestHandler;
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.constant.ErrorEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
@@ -8,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.constant.ErrorEnum;
+
+import java.util.List;
 
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
 
@@ -38,8 +40,8 @@ public class SentinelBlockRequestHandler extends DefaultBlockRequestHandler {
                 .syncBody(ErrorEnum.SENTINEL_FLOW_BLOCK.getMsg());
     }
 
-    private YXDJSONResult buildErrorResult(Throwable ex) {
-        return YXDJSONResult.errorMsg(HttpStatus.TOO_MANY_REQUESTS.value(),
+    private ServerJSONResult buildErrorResult(Throwable ex) {
+        return ServerJSONResult.errorMsg(HttpStatus.TOO_MANY_REQUESTS.value(),
                 ErrorEnum.SENTINEL_FLOW_BLOCK.getMsg());
     }
 
@@ -48,7 +50,7 @@ public class SentinelBlockRequestHandler extends DefaultBlockRequestHandler {
      */
     private boolean acceptsHtml(ServerWebExchange exchange) {
         try {
-            var acceptedMediaTypes = exchange.getRequest().getHeaders().getAccept();
+            List<MediaType> acceptedMediaTypes = exchange.getRequest().getHeaders().getAccept();
             acceptedMediaTypes.remove(MediaType.ALL);
             MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
             return acceptedMediaTypes.stream()

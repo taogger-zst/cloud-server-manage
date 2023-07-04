@@ -1,10 +1,10 @@
 package com.taogger.gateway.api;
 
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.model.ResubmitEntity;
+import com.taogger.gateway.service.ResubmitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.model.ResubmitEntity;
-import yxd.kj.app.server.gateway.service.ResubmitService;
 
 /**
  * 重复提交管理
@@ -24,10 +24,10 @@ public class ResubmitController {
      * @date 2022/8/16 14:14
      * @param pageNum
      * @param pageSize
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @GetMapping("/list")
-    public YXDJSONResult list(int pageNum, int pageSize) {
+    public ServerJSONResult list(int pageNum, int pageSize) {
         return resubmitService.list(pageNum, pageSize);
     }
 
@@ -36,10 +36,10 @@ public class ResubmitController {
      * @author taogger
      * @date 2022/8/16 14:15
      * @param resubmitEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @PostMapping("/add")
-    public YXDJSONResult add(@RequestBody ResubmitEntity resubmitEntity) {
+    public ServerJSONResult add(@RequestBody ResubmitEntity resubmitEntity) {
         return resubmitService.add(resubmitEntity);
     }
 
@@ -48,10 +48,10 @@ public class ResubmitController {
      * @author taogger
      * @date 2022/8/16 14:16
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @DeleteMapping("/del/{id}")
-    public YXDJSONResult del(@PathVariable("id") String id) {
+    public ServerJSONResult del(@PathVariable("id") String id) {
         return resubmitService.del(id);
     }
 }

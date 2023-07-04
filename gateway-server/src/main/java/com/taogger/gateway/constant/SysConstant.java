@@ -18,7 +18,7 @@ public class SysConstant {
     public final static String JTI_KEY_PREFIX="oauth2:black:";
 
 
-    public final static String ROLE_USER = "yxdAppUser";
+    public final static String ROLE_USER = "cloudUser";
 
 
 }

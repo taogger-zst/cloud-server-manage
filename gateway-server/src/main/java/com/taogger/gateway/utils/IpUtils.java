@@ -26,8 +26,8 @@ public class IpUtils {
      * @return 返回ip
      */
     public static String get(ServerHttpRequest request) {
-        var headers = request.getHeaders();
-        var ipAddress = headers.getFirst("x-forwarded-for");
+        HttpHeaders headers = request.getHeaders();
+        String ipAddress = headers.getFirst("x-forwarded-for");
         if (ipAddress == null || ipAddress.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ipAddress)) {
             ipAddress = headers.getFirst("Proxy-Client-IP");
         }
@@ -41,7 +41,7 @@ public class IpUtils {
             if (IP_LOCAL.equals(ipAddress)) {
                 // 根据网卡取本机配置的IP
                 try {
-                    var inet = InetAddress.getLocalHost();
+                    InetAddress inet = InetAddress.getLocalHost();
                     ipAddress = inet.getHostAddress();
                 } catch (UnknownHostException e) {
                     // ignore

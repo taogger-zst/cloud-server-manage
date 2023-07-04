@@ -1,10 +1,10 @@
 package com.taogger.gateway.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.taogger.common.utils.serialize.DateYMDHMSSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import yxd.kj.app.utils.serialize.DateYMDHMSSerialize;
 
 import java.time.LocalDateTime;
 

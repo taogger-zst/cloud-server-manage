@@ -1,11 +1,11 @@
 package com.taogger.gateway.api;
 
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.model.DeveloperEntity;
+import com.taogger.gateway.service.DeveloperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.model.DeveloperEntity;
-import yxd.kj.app.server.gateway.service.DeveloperService;
 
 /**
  * 开发者管理api
@@ -26,10 +26,10 @@ public class DeveloperController {
      * @date 2022/8/12 11:31
      * @param pageNum
      * @param pageSize
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @GetMapping("/list")
-    public YXDJSONResult list(int pageNum, int pageSize) {
+    public ServerJSONResult list(int pageNum, int pageSize) {
         return developerService.list(pageNum, pageSize);
     }
 
@@ -38,10 +38,10 @@ public class DeveloperController {
      * @author taogger
      * @date 2022/8/12 9:15
      * @param developerEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @PostMapping("/add")
-    public YXDJSONResult add(@RequestBody DeveloperEntity developerEntity) {
+    public ServerJSONResult add(@RequestBody DeveloperEntity developerEntity) {
         return developerService.add(developerEntity);
     }
 
@@ -50,10 +50,10 @@ public class DeveloperController {
      * @author taogger
      * @date 2022/8/12 11:13
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @DeleteMapping("/del/{id}")
-    public YXDJSONResult del(@PathVariable("id") String id) {
+    public ServerJSONResult del(@PathVariable("id") String id) {
         return developerService.del(id);
     }
 }

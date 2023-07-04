@@ -1,16 +1,18 @@
 package com.taogger.gateway.exception;
 
 import cn.hutool.json.JSONUtil;
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.constant.ErrorEnum;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.server.ServerAuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.constant.ErrorEnum;
 
 import java.nio.charset.Charset;
 
@@ -24,11 +26,11 @@ public class RequestAuthenticationEntryPoint implements ServerAuthenticationEntr
 
     @Override
     public Mono<Void> commence(ServerWebExchange exchange, AuthenticationException e) {
-        var response = exchange.getResponse();
+        ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        var body = JSONUtil.toJsonStr(YXDJSONResult.errorDisposeMsg(ErrorEnum.INVALID_TOKEN.getMsg()));
-        var buffer =  response.bufferFactory().wrap(body.getBytes(Charset.forName("UTF-8")));
+        String body = JSONUtil.toJsonStr(ServerJSONResult.errorDisposeMsg(ErrorEnum.INVALID_TOKEN.getMsg()));
+        DataBuffer buffer =  response.bufferFactory().wrap(body.getBytes(Charset.forName("UTF-8")));
         return response.writeWith(Mono.just(buffer));
     }
 }

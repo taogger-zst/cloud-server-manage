@@ -1,12 +1,12 @@
 package com.taogger.gateway.service;
 
+import com.taogger.gateway.utils.Device;
+import com.taogger.gateway.utils.DevicePlatform;
+import com.taogger.gateway.utils.DeviceType;
+import com.taogger.gateway.utils.LiteDevice;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
-import yxd.kj.app.server.gateway.utils.Device;
-import yxd.kj.app.server.gateway.utils.DevicePlatform;
-import yxd.kj.app.server.gateway.utils.DeviceType;
-import yxd.kj.app.server.gateway.utils.LiteDevice;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;

@@ -5,15 +5,15 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.ConfigType;
 import com.alibaba.nacos.api.exception.NacosException;
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.config.nacos.KJNcConfigManager;
+import com.taogger.gateway.model.BlackRouteEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.config.nacos.KJNcConfigManager;
-import yxd.kj.app.server.gateway.model.BlackRouteEntity;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -39,22 +39,22 @@ public class BlackRouteService {
     @Value("${spring.cloud.nacos.config.group}")
     private String group;
 
-    public YXDJSONResult list(int page, int limit) {
-        var pageable = PageRequest.of(page - 1, limit);
+    public ServerJSONResult list(int page, int limit) {
+        PageRequest pageable = PageRequest.of(page - 1, limit);
         //分页
         List<BlackRouteEntity> entities = KJNcConfigManager.getBlackRoutes().stream()
                 .skip((page - 1) * limit)
                 .limit(limit).collect(Collectors.toList());
-        var blackIpEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getBlackRoutes().size());
-        return YXDJSONResult.ok(blackIpEntities);
+        PageImpl blackIpEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getBlackRoutes().size());
+        return ServerJSONResult.ok(blackIpEntities);
     }
 
     public List<BlackRouteEntity> getNotExpire() {
         return KJNcConfigManager.getBlackRoutes();
     }
 
-    public YXDJSONResult add(BlackRouteEntity blackRouteEntity) {
-        var now = LocalDateTime.now();
+    public ServerJSONResult add(BlackRouteEntity blackRouteEntity) {
+        LocalDateTime now = LocalDateTime.now();
         long time = now.toInstant(ZoneOffset.of("+8")).toEpochMilli();
         if (blackRouteEntity.getExpireTime().longValue() != -1l) {
             //毫秒相加不符合前端业务，需 *1000
@@ -63,26 +63,26 @@ public class BlackRouteService {
         Long id = new Snowflake().nextId();
         blackRouteEntity.setId(id.toString());
         KJNcConfigManager.saveBlackRoute(blackRouteEntity);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
-    public YXDJSONResult del(String id) {
+    public ServerJSONResult del(String id) {
         KJNcConfigManager.delBlackRoute(id);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
     @PostConstruct
     public void init() {
         //初始化调用-增加定时器定时过滤掉过期的数据
         //创建timer对象
-        var timer = new Timer();
+        Timer timer = new Timer();
         //创建timerTask对象
-        var timerTask = new TimerTask() {
+        TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
                 //过滤掉过期的数据
                 List<BlackRouteEntity> filterBlackRoutes = new ArrayList<>();
-                var now = LocalDateTime.now();
+                LocalDateTime now = LocalDateTime.now();
                 for (BlackRouteEntity blackRouteEntity : KJNcConfigManager.getBlackRoutes()) {
                     if (blackRouteEntity.getExpireTime() != -1l) {
                         long time = now.toInstant(ZoneOffset.of("+8")).toEpochMilli();

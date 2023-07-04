@@ -1,10 +1,10 @@
 package com.taogger.gateway.api;
 
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.model.ContentCheckEntity;
+import com.taogger.gateway.service.ContentCheckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.model.ContentCheckEntity;
-import yxd.kj.app.server.gateway.service.ContentCheckService;
 
 /**
  * 内容审核配置api
@@ -24,10 +24,10 @@ public class ContentCheckController {
      * @date 2022/8/18 14:30
      * @param pageNum
      * @param pageSize
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @GetMapping("/list")
-    public YXDJSONResult list(int pageNum, int pageSize) {
+    public ServerJSONResult list(int pageNum, int pageSize) {
         return contentCheckService.list(pageNum, pageSize);
     }
 
@@ -36,10 +36,10 @@ public class ContentCheckController {
      * @author taogger
      * @date 2022/8/18 14:32
      * @param contentCheckEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @PostMapping("/add")
-    public YXDJSONResult add(@RequestBody ContentCheckEntity contentCheckEntity) {
+    public ServerJSONResult add(@RequestBody ContentCheckEntity contentCheckEntity) {
         return contentCheckService.add(contentCheckEntity);
     }
 
@@ -48,10 +48,10 @@ public class ContentCheckController {
      * @author taogger
      * @date 2022/8/18 14:38
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @DeleteMapping("/del/{id}")
-    public YXDJSONResult del(@PathVariable("id") String id) {
+    public ServerJSONResult del(@PathVariable("id") String id) {
         return contentCheckService.del(id);
     }
 }

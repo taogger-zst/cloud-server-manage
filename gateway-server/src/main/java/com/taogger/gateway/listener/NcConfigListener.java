@@ -1,6 +1,7 @@
 package com.taogger.gateway.listener;
 
 import com.alibaba.nacos.api.config.ConfigService;
+import com.taogger.gateway.config.nacos.KJNcConfigManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
@@ -9,7 +10,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-import yxd.kj.app.server.gateway.config.nacos.KJNcConfigManager;
 
 /**
  * 配置监听
@@ -31,7 +31,7 @@ public class NcConfigListener implements ApplicationListener<ApplicationReadyEve
     @SneakyThrows
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        var group = applicationContext.getEnvironment().getProperty("spring.cloud.nacos.config.group");
+        String group = applicationContext.getEnvironment().getProperty("spring.cloud.nacos.config.group");
         KJNcConfigManager.setConfigService(configService);
         KJNcConfigManager.setGroup(group);
         for (String dataKey : KJNcConfigManager.dataIds) {

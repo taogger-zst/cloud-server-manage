@@ -9,7 +9,7 @@ import com.alibaba.csp.sentinel.adapter.gateway.common.api.GatewayApiDefinitionM
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayParamFlowItem;
 import com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayRuleManager;
-import yxd.kj.app.server.gateway.model.FlowRuleEntity;
+import com.taogger.gateway.model.FlowRuleEntity;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,13 +45,13 @@ public class KJNcFlowConfigHandler extends KJAbstractConfigHandler {
         for (FlowRuleEntity flow : flows) {
             //构建当前配置的资源信息
             String[] uris = flow.getUri().split(",");
-            var predicateItems = new HashSet<ApiPredicateItem>();
+            HashSet<ApiPredicateItem> predicateItems = new HashSet();
             for (String url : uris) {
                 predicateItems.add(new ApiPathPredicateItem()
                         .setPattern(url)
                         .setMatchStrategy(flow.getUrlStrategy()));
             }
-            var apiDefinition = new ApiDefinition(flow.getResource());
+            ApiDefinition apiDefinition = new ApiDefinition(flow.getResource());
             apiDefinition.setPredicateItems(predicateItems);
             apiDefinitions.add(apiDefinition);
         }
@@ -68,7 +68,7 @@ public class KJNcFlowConfigHandler extends KJAbstractConfigHandler {
     public void builderFlowRule(List<FlowRuleEntity> flows) {
         Set<GatewayFlowRule> rules = new HashSet<>();
         for (FlowRuleEntity flowRuleEntity : flows) {
-            var rule = new GatewayFlowRule(flowRuleEntity.getResource());
+            GatewayFlowRule rule = new GatewayFlowRule(flowRuleEntity.getResource());
             rule.setResourceMode(SentinelGatewayConstants.RESOURCE_MODE_CUSTOM_API_NAME);
             if (flowRuleEntity.getBurst() != null) {
                 rule.setBurst(flowRuleEntity.getBurst());
@@ -80,7 +80,7 @@ public class KJNcFlowConfigHandler extends KJAbstractConfigHandler {
                 rule.setMaxQueueingTimeoutMs(flowRuleEntity.getMaxQueueingTimeoutMs());
             }
             if (flowRuleEntity.getParamParseStrategy() != null) {
-                var ruleItem = new GatewayParamFlowItem();
+                GatewayParamFlowItem ruleItem = new GatewayParamFlowItem();
                 ruleItem.setParseStrategy(flowRuleEntity.getParamParseStrategy());
                 if (flowRuleEntity.getParamParseStrategy() == SentinelGatewayConstants.PARAM_PARSE_STRATEGY_HEADER
                         || flowRuleEntity.getParamParseStrategy() == SentinelGatewayConstants.PARAM_PARSE_STRATEGY_URL_PARAM) {

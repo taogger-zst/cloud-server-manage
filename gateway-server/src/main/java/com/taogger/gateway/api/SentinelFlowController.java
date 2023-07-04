@@ -1,10 +1,10 @@
 package com.taogger.gateway.api;
 
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.model.FlowRuleEntity;
+import com.taogger.gateway.service.FlowRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.model.FlowRuleEntity;
-import yxd.kj.app.server.gateway.service.FlowRuleService;
 
 /**
  * 限流接口
@@ -24,10 +24,10 @@ public class SentinelFlowController {
      * @date 2022/8/17 16:57
      * @param pageNum
      * @param pageSize
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @GetMapping("/list")
-    public YXDJSONResult list(int pageNum, int pageSize) {
+    public ServerJSONResult list(int pageNum, int pageSize) {
         return flowRuleService.list(pageNum, pageSize);
     }
 
@@ -36,10 +36,10 @@ public class SentinelFlowController {
      * @author taogger
      * @date 2022/8/17 16:58
      * @param flowRuleEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @PostMapping("/add")
-    public YXDJSONResult add(@RequestBody FlowRuleEntity flowRuleEntity) {
+    public ServerJSONResult add(@RequestBody FlowRuleEntity flowRuleEntity) {
         return flowRuleService.add(flowRuleEntity);
     }
 
@@ -48,10 +48,10 @@ public class SentinelFlowController {
      * @author taogger
      * @date 2022/8/17 17:00
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @DeleteMapping("/del/{id}")
-    public YXDJSONResult del(@PathVariable("id") String id) {
+    public ServerJSONResult del(@PathVariable("id") String id) {
         return flowRuleService.del(id);
     }
 
@@ -60,10 +60,10 @@ public class SentinelFlowController {
      * @author taogger
      * @date 2022/8/17 17:15
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
     @GetMapping("/detail/{id}")
-    public YXDJSONResult detail(@PathVariable("id") String id) {
+    public ServerJSONResult detail(@PathVariable("id") String id) {
         return flowRuleService.detail(id);
     }
 }

@@ -1,14 +1,14 @@
 package com.taogger.gateway.service;
 
 import cn.hutool.core.lang.Snowflake;
+import com.taogger.common.utils.ServerJSONResult;
+import com.taogger.gateway.config.nacos.KJNcConfigManager;
+import com.taogger.gateway.model.ContentCheckEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import yxd.kj.app.api.utils.YXDJSONResult;
-import yxd.kj.app.server.gateway.config.nacos.KJNcConfigManager;
-import yxd.kj.app.server.gateway.model.ContentCheckEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,16 +30,16 @@ public class ContentCheckService {
      * @date 2022/8/16 14:02
      * @param page
      * @param limit
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
-    public YXDJSONResult list(int page, int limit) {
-        var pageable = PageRequest.of(page - 1, limit);
+    public ServerJSONResult list(int page, int limit) {
+        PageRequest pageable = PageRequest.of(page - 1, limit);
         //分页
         List<ContentCheckEntity> entities = KJNcConfigManager.getCheckEntities().stream()
                 .skip((page - 1) * limit)
                 .limit(limit).collect(Collectors.toList());
-        var blackIpEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getCheckEntities().size());
-        return YXDJSONResult.ok(blackIpEntities);
+        PageImpl blackIpEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getCheckEntities().size());
+        return ServerJSONResult.ok(blackIpEntities);
     }
 
     /**
@@ -47,13 +47,13 @@ public class ContentCheckService {
      * @author taogger
      * @date 2022/8/16 14:07
      * @param contentCheckEntity
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
-    public YXDJSONResult add(ContentCheckEntity contentCheckEntity) {
+    public ServerJSONResult add(ContentCheckEntity contentCheckEntity) {
         Long id = new Snowflake().nextId();
         contentCheckEntity.setId(id.toString());
         KJNcConfigManager.saveContentCheck(contentCheckEntity);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 
     /**
@@ -61,10 +61,10 @@ public class ContentCheckService {
      * @author taogger
      * @date 2022/8/16 14:09
      * @param id
-     * @return {@link YXDJSONResult}
+     * @return {@link ServerJSONResult}
     **/
-    public YXDJSONResult del(String id) {
+    public ServerJSONResult del(String id) {
         KJNcConfigManager.delContentCheck(id);
-        return YXDJSONResult.ok();
+        return ServerJSONResult.ok();
     }
 }
