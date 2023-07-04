@@ -3,8 +3,8 @@ package com.taogger.gateway.api;
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.model.BlackIpEntity;
 import com.taogger.gateway.model.BlackRouteEntity;
-import com.taogger.gateway.service.BlackIpService;
-import com.taogger.gateway.service.BlackRouteService;
+import com.taogger.gateway.service.business.BlackIpService;
+import com.taogger.gateway.service.business.BlackRouteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,4 +1,4 @@
-package com.taogger.gateway.service;
+package com.taogger.gateway.service.business;
 
 import com.taogger.gateway.utils.Device;
 import com.taogger.gateway.utils.DevicePlatform;

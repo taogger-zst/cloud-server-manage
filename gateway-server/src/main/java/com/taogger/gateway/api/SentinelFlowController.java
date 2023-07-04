@@ -2,7 +2,7 @@ package com.taogger.gateway.api;
 
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.model.FlowRuleEntity;
-import com.taogger.gateway.service.FlowRuleService;
+import com.taogger.gateway.service.business.FlowRuleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

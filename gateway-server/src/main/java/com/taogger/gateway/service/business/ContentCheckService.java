@@ -1,11 +1,10 @@
-package com.taogger.gateway.service;
+package com.taogger.gateway.service.business;
 
 import cn.hutool.core.lang.Snowflake;
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.config.nacos.KJNcConfigManager;
-import com.taogger.gateway.model.ResubmitEntity;
+import com.taogger.gateway.model.ContentCheckEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -15,19 +14,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 重复提交service
+ * 内容审核service
  * @author taogger
- * @date 2022/8/16 14:10
+ * @date 2022/8/16 14:00
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ResubmitService {
+public class ContentCheckService {
+
 
     /**
-     * 列表接口
-     * @author taogger
-     * @date 2022/8/16 14:11
+     * 内容审核列表
+     * @author taogger 
+     * @date 2022/8/16 14:02
      * @param page
      * @param limit
      * @return {@link ServerJSONResult}
@@ -35,38 +35,36 @@ public class ResubmitService {
     public ServerJSONResult list(int page, int limit) {
         PageRequest pageable = PageRequest.of(page - 1, limit);
         //分页
-        List<ResubmitEntity> entities = KJNcConfigManager.getResubmitEntities().stream()
+        List<ContentCheckEntity> entities = KJNcConfigManager.getCheckEntities().stream()
                 .skip((page - 1) * limit)
                 .limit(limit).collect(Collectors.toList());
-        PageImpl resubmitEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getResubmitEntities().size());
-        return ServerJSONResult.ok(resubmitEntities);
+        PageImpl blackIpEntities = new PageImpl<>(entities, pageable, KJNcConfigManager.getCheckEntities().size());
+        return ServerJSONResult.ok(blackIpEntities);
     }
 
     /**
-     * 添加重复提交
+     * 添加内容审核
      * @author taogger
-     * @date 2022/8/15 14:10
-     * @param resubmitEntity
+     * @date 2022/8/16 14:07
+     * @param contentCheckEntity
      * @return {@link ServerJSONResult}
-     **/
-    @SneakyThrows
-    public ServerJSONResult add(ResubmitEntity resubmitEntity) {
+    **/
+    public ServerJSONResult add(ContentCheckEntity contentCheckEntity) {
         Long id = new Snowflake().nextId();
-        resubmitEntity.setId(id.toString());
-        KJNcConfigManager.saveResubmit(resubmitEntity);
+        contentCheckEntity.setId(id.toString());
+        KJNcConfigManager.saveContentCheck(contentCheckEntity);
         return ServerJSONResult.ok();
     }
 
     /**
-     * 删除重复提交
+     * 删除内容审核
      * @author taogger
-     * @date 2022/8/15 14:11
+     * @date 2022/8/16 14:09
      * @param id
      * @return {@link ServerJSONResult}
-     **/
-    @SneakyThrows
+    **/
     public ServerJSONResult del(String id) {
-        KJNcConfigManager.delResubmit(id);
+        KJNcConfigManager.delContentCheck(id);
         return ServerJSONResult.ok();
     }
 }

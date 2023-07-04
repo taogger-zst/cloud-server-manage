@@ -2,7 +2,7 @@ package com.taogger.gateway.api;
 
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.model.DeveloperEntity;
-import com.taogger.gateway.service.DeveloperService;
+import com.taogger.gateway.service.business.DeveloperService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.*;

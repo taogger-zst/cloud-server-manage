@@ -1,4 +1,4 @@
-package com.taogger.gateway.service;
+package com.taogger.gateway.service.business;
 
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.cloud.nacos.NacosConfigManager;
@@ -13,6 +13,7 @@ import com.taogger.gateway.mapper.ConfigInfoMapper;
 import com.taogger.gateway.model.ConfigInfo;
 import com.taogger.gateway.model.DeveloperEntity;
 import com.taogger.gateway.model.TenantInfo;
+import com.taogger.gateway.service.ITenantInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DeveloperService {
 
-    private final TenantInfoService tenantInfoService;
+    private final ITenantInfoService iTenantInfoService;
     private final ConfigInfoMapper configInfoMapper;
     private final NacosConfigManager nacosConfigManager;
 
@@ -59,7 +60,7 @@ public class DeveloperService {
         developerEntity.setCreateTime(now);
         developerEntity.setUpdateTime(now);
         KJNcConfigManager.saveDevelopers(developerEntity);
-        long count = tenantInfoService.count();
+        long count = iTenantInfoService.count();
         TenantInfo tenantInfo = new TenantInfo();
         tenantInfo.setTenantDesc(developerEntity.getName());
         tenantInfo.setTenantId(id);
@@ -69,7 +70,7 @@ public class DeveloperService {
         tenantInfo.setId(count + 1);
         tenantInfo.setTenantName(developerEntity.getName());
         tenantInfo.setKp("1");
-        tenantInfoService.save(tenantInfo);
+        iTenantInfoService.save(tenantInfo);
         //新加配置信息
         LambdaQueryWrapper<ConfigInfo> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(ConfigInfo::getTenantId,namespace);
@@ -99,7 +100,7 @@ public class DeveloperService {
         KJNcConfigManager.delDeveloper(id);
         LambdaQueryWrapper<TenantInfo> queryWrapper = Wrappers.lambdaQuery();
         queryWrapper.eq(TenantInfo::getTenantId,id);
-        tenantInfoService.remove(queryWrapper);
+        iTenantInfoService.remove(queryWrapper);
 
         LambdaQueryWrapper<ConfigInfo> configQueryWrapper = Wrappers.lambdaQuery();
         configQueryWrapper.eq(ConfigInfo::getTenantId,id);

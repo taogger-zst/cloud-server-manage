@@ -2,7 +2,7 @@ package com.taogger.gateway.api;
 
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.model.ContentCheckEntity;
-import com.taogger.gateway.service.ContentCheckService;
+import com.taogger.gateway.service.business.ContentCheckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

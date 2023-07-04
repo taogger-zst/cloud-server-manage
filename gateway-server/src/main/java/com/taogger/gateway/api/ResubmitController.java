@@ -2,7 +2,7 @@ package com.taogger.gateway.api;
 
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.model.ResubmitEntity;
-import com.taogger.gateway.service.ResubmitService;
+import com.taogger.gateway.service.business.ResubmitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

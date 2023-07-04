@@ -1,4 +1,4 @@
-package com.taogger.gateway.service;
+package com.taogger.gateway.service.business;
 
 import com.taogger.common.utils.ServerJSONResult;
 import com.taogger.gateway.repository.DynamicRouteDefinitionRepository;

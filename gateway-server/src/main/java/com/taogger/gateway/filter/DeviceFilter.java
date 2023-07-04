@@ -2,7 +2,7 @@ package com.taogger.gateway.filter;
 
 import com.taogger.common.constants.TokenConstant;
 import com.taogger.gateway.constant.FilterConstant;
-import com.taogger.gateway.service.DeviceService;
+import com.taogger.gateway.service.business.DeviceService;
 import com.taogger.gateway.utils.Device;
 import com.taogger.gateway.utils.DevicePlatform;
 import lombok.RequiredArgsConstructor;

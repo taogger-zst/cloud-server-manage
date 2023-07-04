@@ -1,4 +1,4 @@
-package com.taogger.gateway.service;
+package com.taogger.gateway.service.business;
 
 import cn.hutool.core.lang.Snowflake;
 import cn.hutool.json.JSONUtil;
