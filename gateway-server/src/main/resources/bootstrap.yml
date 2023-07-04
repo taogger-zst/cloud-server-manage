@@ -1,0 +1,68 @@
+##变量定义
+GROUP: gateway-server
+GATEWAY-ENV: ${ENV:dev}
+###dubbo配置
+dubbo:
+  ##定义服务名称
+  application:
+    name: gateway-server
+  ##服务提供者RPC协议
+  protocol:
+    name: dubbo
+    port: -1
+  ##注册中心地址
+  registry:
+    address: nacos://${IP}
+  ##服务消费者默认配置 @DubboReference
+  consumer:
+    ##远程服务调用超时时间 5s
+    timeout: 5000
+    ##启动时检查提供者是否存在，true报错，false忽略
+    check: false
+  cloud:
+    subscribed-services: check-server
+##cloud配置开始
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${IP}
+        namespace: ${NAMESPACE}
+        metadata:
+          env: ${GATEWAY-ENV}
+      config:
+        server-addr: ${IP}
+        namespace: ${NAMESPACE}
+        group: ${GROUP}
+        file-extension: ymal
+        shared-configs:
+          #redis
+          - data-id: ${GROUP}-redis.yaml
+            refresh: true
+            group: ${GROUP}
+          #database
+          - data-id: ${GROUP}-database.yaml
+            refresh: true
+            group: ${GROUP}
+#   网关连接sentinel配置
+#    sentinel:
+#      transport:
+#        dashboard: localhost:8080
+
+##路由配置就此告一段落,采用代码配置
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#          lower-case-service-id: true
+#      routes:
+#        - id: auth-server
+#          uri: lb://auth-server
+#          predicates:
+#            - Path=/oauth/**
+#        - id: user-server
+#          uri: lb://user-server
+#          predicates:
+#            - Path=/user/**
+#          filters:
+#            - StripPrefix=1

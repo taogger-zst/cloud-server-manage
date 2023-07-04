@@ -11,6 +11,7 @@
     <modules>
         <module>gateway-server</module>
         <module>common-server</module>
+        <module>check-server</module>
     </modules>
 
     <parent>

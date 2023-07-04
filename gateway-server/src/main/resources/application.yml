@@ -1,0 +1,51 @@
+##对称加密私钥
+jwt:
+  sign-key: TAOGGER
+server:
+  port: 9999
+spring:
+  application:
+    name: gateway-server
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+#  data:
+#    mongodb:
+#      host: localhost
+#      port: 27017
+#      database: gateway
+#  elasticsearch:
+#    uris: http://192.168.1.17:9200
+logging:
+  level:
+    org.springframework.security: debug
+#rocketmq:
+#  name-server: 127.0.0.1:9876
+### 生产者
+#  producer:
+#    #同一类Producer的集合，这类Producer发送同一类消息且发送逻辑一致。
+#    #如果发送的是事务消息且原始生产者在发送之后崩溃，则Broker服务器会联系同一生产者组的其他生产者实例以提交或回溯消费。
+#    group: gateway-producer
+#    #消息发送的超时时间 默认3000ms
+#    send-message-timeout: 3000
+#    #消息达到4096字节的时候，消息就会被压缩。默认 4096
+#    compress-message-body-threshold: 4096
+#    #最大的消息限制，默认为128K
+#    max-message-size: 4194304
+#    #同步消息发送失败重试次数
+#    retry-times-when-send-failed: 3
+#    #在内部发送失败时是否重试其他代理，这个参数在有多个broker时才生效
+#    retry-next-server: true
+#    #异步消息发送失败重试的次数
+#    retry-times-when-send-async-failed: 3
+###后续用db管理过滤路由
+#oauth2:
+#  cloud:
+#    sys:
+#      parameter:
+#        ignoreUrls:
+#          - /oauth/token
+#          - /oauth/authorize
+#          - /routes/**
+#          - /developer/**
+#          - /user1/info
